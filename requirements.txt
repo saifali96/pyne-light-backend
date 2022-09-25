@@ -56,3 +56,4 @@ wcwidth==0.2.5 ; python_version >= "3.8" and python_version < "4.0"
 websockets==10.3 ; python_version >= "3.8" and python_version < "4.0"
 wrapt==1.14.1 ; python_version >= "3.8" and python_version < "4.0"
 zipp==3.8.1 ; python_version >= "3.8" and python_version < "3.9"
+hubspot-api-client==6.0.0

@@ -4,9 +4,12 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 
 from fastapi_utils.tasks import repeat_every
 import requests, json
+
+from hubspot import HubSpot
 
 from api import router
 from api.home.home import home_router
@@ -101,6 +104,27 @@ def fetch_updated_analytics() -> None:
         comp_analytics.append(req.json())
     
     comp_analytics = [item for sublist in comp_analytics for item in sublist]
+
+    api_client = HubSpot(access_token='pat-eu1-04356830-ef31-4ba9-8d28-fcca32f54b28')
+    try:
+        all_contacts = api_client.crm.contacts.get_all()
+        all_companies = api_client.crm.companies.get_all()
+        companies = []
+        contacts = []
+        for company in all_companies:
+            companies.append(jsonable_encoder(company.to_dict()))
+
+        for contact in all_contacts:
+            contacts.append(jsonable_encoder(contact.to_dict()))
+
+        with open('hs_company_data.json', 'w') as outfile:
+            json.dump(companies, outfile)
+        
+        with open('hs_contact_data.json', 'w') as outfile:
+            json.dump(contacts, outfile)
+
+    except Exception as e:
+        print("Exception when requesting contact by id: %s\n" % e)
 
     with open('analytics_data.json', 'w') as outfile:
         json.dump(comp_analytics, outfile)

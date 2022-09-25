@@ -15,6 +15,9 @@ class AnalyticsService:
         with open('analytics_data.json') as json_file:
             comp_analytics = json.load(json_file)
 
+        with open('hs_company_data.json') as json_file:
+            hs_comp_analytics = json.load(json_file)
+
         result = []
         
         for event in comp_analytics:
@@ -31,11 +34,25 @@ class AnalyticsService:
             
             result[company_idx]["features"][feature_idx]["featureUsedCount"] += 1
 
+        for comp in result:
+            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["id"] == str(comp["companyName"])), None)
+            if hs_company_idx is None:
+                comp["hsCompany"] = None
+                continue
+
+            comp["hsCompany"] = hs_comp_analytics[hs_company_idx]
+            
         return result
 
     async def get_product_user_analytics(self, from_ts: datetime = None):
         with open('analytics_data.json') as json_file:
             comp_analytics = json.load(json_file)
+        
+        with open('hs_company_data.json') as json_file:
+            hs_comp_analytics = json.load(json_file)
+
+        with open('hs_contact_data.json') as json_file:
+            hs_cont_analytics = json.load(json_file)
 
         result = []
         if from_ts:
@@ -80,6 +97,21 @@ class AnalyticsService:
             else:
                 continue
 
+        for comp in result:
+            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["id"] == str(comp["companyName"])), None)
+            if hs_company_idx is None:
+                comp["hsCompany"] = None
+            else:
+                comp["hsCompany"] = hs_comp_analytics[hs_company_idx]    
+
+            for user in comp["users"]:
+                hs_contact_idx = next((i for i, hs_user in enumerate(hs_cont_analytics) if hs_user["id"] == str(user["userName"])), None)
+                if hs_contact_idx is None:
+                    user["hsContact"] = None
+                    continue
+
+                user["hsContact"] = hs_cont_analytics[hs_contact_idx]    
+        
         return result
 
 
