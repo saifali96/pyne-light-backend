@@ -35,7 +35,7 @@ class AnalyticsService:
             result[company_idx]["features"][feature_idx]["featureUsedCount"] += 1
 
         for comp in result:
-            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["id"] == str(comp["companyName"])), None)
+            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["properties"]["company_id"] == str(comp["companyName"])), None)
             if hs_company_idx is None:
                 comp["hsCompany"] = None
                 continue
@@ -98,14 +98,14 @@ class AnalyticsService:
                 continue
 
         for comp in result:
-            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["id"] == str(comp["companyName"])), None)
+            hs_company_idx = next((i for i, company in enumerate(hs_comp_analytics) if company["properties"]["company_id"] == str(comp["companyName"])), None)
             if hs_company_idx is None:
                 comp["hsCompany"] = None
             else:
                 comp["hsCompany"] = hs_comp_analytics[hs_company_idx]    
 
             for user in comp["users"]:
-                hs_contact_idx = next((i for i, hs_user in enumerate(hs_cont_analytics) if hs_user["id"] == str(user["userName"])), None)
+                hs_contact_idx = next((i for i, hs_user in enumerate(hs_cont_analytics) if hs_user["properties"]["user_id"] == str(user["userName"])), None)
                 if hs_contact_idx is None:
                     user["hsContact"] = None
                     continue

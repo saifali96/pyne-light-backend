@@ -112,8 +112,8 @@ def fetch_updated_analytics() -> None:
 
     api_client = HubSpot(access_token=os.getenv("HS_API_KEY"))
     try:
-        all_contacts = api_client.crm.contacts.get_all()
-        all_companies = api_client.crm.companies.get_all()
+        all_contacts = api_client.crm.contacts.get_all(properties=["user_id"])
+        all_companies = api_client.crm.companies.get_all(properties=["company_id"])
         companies = []
         contacts = []
         for company in all_companies:
