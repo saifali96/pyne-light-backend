@@ -9,6 +9,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi_utils.tasks import repeat_every
 import requests, json
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from hubspot import HubSpot
 
 from api import router
@@ -97,15 +102,15 @@ app = create_app()
 @repeat_every(seconds=60*60)  # 1 hour
 def fetch_updated_analytics() -> None:
     print("Updating Analytics")
-    company_list = ["Apple", "Alphabet", "Tesla", "Twitter", "N26"]  # TODO - Extract this to an ENV VAR or query input?
+    company_list = os.getenv("FAKE_API_DATA_SEED").split(", ")
     comp_analytics = []
     for comp in company_list:
-        req = requests.get(f"https://pyne-backend.onrender.com/fake/product_data/{comp}")  # TODO - Add Error handling and extract URL to ENV VAR
+        req = requests.get(f"{os.getenv('PYNE_BACKEND')}/{comp}")
         comp_analytics.append(req.json())
     
     comp_analytics = [item for sublist in comp_analytics for item in sublist]
 
-    api_client = HubSpot(access_token='pat-eu1-04356830-ef31-4ba9-8d28-fcca32f54b28')
+    api_client = HubSpot(access_token=os.getenv("HS_API_KEY"))
     try:
         all_contacts = api_client.crm.contacts.get_all()
         all_companies = api_client.crm.companies.get_all()
